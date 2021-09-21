@@ -3,7 +3,7 @@ import transactionRoutes from './transactions';
 
 const router = express.Router();
 
-router.use('/transactions', transactionRoutes);
+router.use('/transaction', transactionRoutes);
 
 
 export = router;

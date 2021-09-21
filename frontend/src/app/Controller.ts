@@ -2,12 +2,8 @@ import debug from 'debug';
 import MemoryBufferStateManager from "../framework/state/MemoryBufferStateManager";
 import StateChangeListener from "../framework/state/StateChangeListener";
 import {StateManager} from "../framework/state/StateManager";
-import SocketManager from "../framework/socket/SocketManager";
 import AsyncStateManagerWrapper from "../framework/state/AsyncStateManagerWrapper";
 import {AggregateStateManager} from "../framework/state/AggregateStateManager";
-import SocketListenerDelegate from "./SocketListenerDelegate";
-import {ChatManager} from "../framework/socket/ChatManager";
-import {NotificationController} from "../framework/socket/NotificationController";
 import {API_Config, STATE_NAMES} from "./AppTypes";
 import {RESTApiStateManager} from "../framework/state/RESTApiStateManager";
 import {DataObjectDefinition, FieldDefinition, FieldType} from "../framework/model/DataObjectTypeDefs";
@@ -18,9 +14,7 @@ import {KeyType} from "../framework/ui/ConfigurationTypes";
 import {DataObjectListener} from "../framework/model/DataObjectListener";
 import {DataObjectController} from "../framework/model/DataObjectController";
 import {isSameMongo} from "../framework/util/EqualityFunctions";
-import {v4} from "uuid";
 import DownloadManager from "../framework/network/DownloadManager";
-import {EncryptedIndexedDBStateManager} from "../framework/state/EncryptedIndexedDBStateManager";
 
 
 const cLogger = debug('controller-ts');
@@ -51,54 +45,25 @@ export default class Controller implements StateChangeListener, DataObjectListen
         let restSM = RESTApiStateManager.getInstance();
         restSM.initialise([
             {
-                stateName: STATE_NAMES.users,
+                stateName: STATE_NAMES.transactions,
                 serverURL: '',
-                api: API_Config.users,
+                api: API_Config.transaction,
                 isActive: true
             },
-            {
-                stateName: STATE_NAMES.exerciseTypes,
-                serverURL: '',
-                api: API_Config.exerciseTypes,
-                isActive: true,
-                idField: '_id'
-            },
-            {
-                stateName: STATE_NAMES.workouts,
-                serverURL: '',
-                api: API_Config.workouts,
-                isActive: true,
-                idField: '_id'
-            }
         ]);
 
-        // let indexSM = new EncryptedIndexedDBStateManager();
-        // indexSM.initialise('fitness-tracker',[
-        //     {
-        //         name: STATE_NAMES.exerciseTypes,
-        //         keyField: "_id"
-        //     },
-        //     {
-        //         name: STATE_NAMES.workouts,
-        //         keyField: "_id"
-        //     },
-        // ]);
 
 
         let aggregateSM = AggregateStateManager.getInstance();
         let memorySM = MemoryBufferStateManager.getInstance();
 
         let asyncSM = new AsyncStateManagerWrapper(aggregateSM, restSM);
-        // let asyncIndexSM = new AsyncStateManagerWrapper(aggregateSM, indexSM);
-        //
-        //
+
+
         aggregateSM.addStateManager(memorySM, [], false);
-        // aggregateSM.addStateManager(asyncIndexSM, [STATE_NAMES.users], false);
-        // aggregateSM.addStateManager(asyncSM, [STATE_NAMES.exerciseTypes,STATE_NAMES.workouts], false);
         aggregateSM.addStateManager(asyncSM, [], false);
 
         this.stateManager = aggregateSM;
-        //this.stateManager = EncryptedBrowserStorageStateManager.getInstance(true);
 
         // state listener
         this.stateChanged = this.stateChanged.bind(this);
@@ -117,33 +82,12 @@ export default class Controller implements StateChangeListener, DataObjectListen
     */
     public onDocumentLoaded(): void {
         cLogger('Initialising data state');
-        // listen for socket events
-        let socketListerDelegate = new SocketListenerDelegate();
-        SocketManager.getInstance().setListener(socketListerDelegate);
 
-        // now that we have all the user we can setup the chat system but only if we are logged in
-        cLogger(`Setting up chat system for user ${this.getLoggedInUserId()}: ${this.getLoggedInUsername()}`);
-        if (this.getLoggedInUserId().trim().length > 0) {
-            // setup the chat system
-            let chatManager = ChatManager.getInstance(); // this connects the manager to the socket system
+        // load the transactions
+        this.getStateManager().getStateByName(STATE_NAMES.transactions);
 
-            // setup the chat notification system
-            NotificationController.getInstance();
-            chatManager.setCurrentUser(this.getLoggedInUsername());
-
-            // let the application view know about message counts
-            chatManager.setUnreadCountListener(this.applicationView);
-
-            chatManager.login();
-
-            // load the users
-            this.getStateManager().getStateByName(STATE_NAMES.users);
-            this.getStateManager().getStateByName(STATE_NAMES.exerciseTypes);
-            this.getStateManager().getStateByName(STATE_NAMES.workouts);
-
-            // apply any queued changes from being offline
-            DownloadManager.getInstance().processOfflineItems();
-        }
+        // apply any queued changes from being offline
+        DownloadManager.getInstance().processOfflineItems();
 
     }
 
@@ -155,53 +99,7 @@ export default class Controller implements StateChangeListener, DataObjectListen
         return 'Controller';
     }
 
-    public isLoggedIn(): boolean {
-        let isLoggedIn = false;
-        try {
-            // @ts-ignore
-            if (loggedInUser) {
-                isLoggedIn = true;
-            }
-        } catch (error) {
-        }
-        return isLoggedIn;
-    }
 
-    public getLoggedInUserId(): string {
-        let result = '';
-        try {
-            // @ts-ignore
-            if (loggedInUser) {
-                // @ts-ignore
-                result = loggedInUser._id;
-            }
-        } catch (error) {
-        }
-        cLoggerDetail(`Logged in user id is ${result}`);
-        return result;
-    }
-
-    public getLoggedInUsername(): string {
-        let result = '';
-        try {
-            // @ts-ignore
-            if (loggedInUser) {
-                // @ts-ignore
-                result = loggedInUser.username;
-            }
-        } catch (error) {
-        }
-        cLoggerDetail(`Logged in user is ${result}`);
-        return result;
-    }
-
-    public handleMessage(message: string): void {
-        cLogger(message);
-    }
-
-    public getCurrentUser(): string {
-        return this.getLoggedInUserId();
-    }
 
     stateChangedItemAdded(managerName: string, name: string, itemAdded: any): void {
     }
@@ -215,14 +113,11 @@ export default class Controller implements StateChangeListener, DataObjectListen
     stateChanged(managerName: string, name: string, values: any) {
     }
 
-    handleShowChat(roomName: string | null) {
-        this.applicationView.handleShowChat(roomName);
-    }
 
     create(controller: DataObjectController, typeName: string, dataObj: any): void {
         switch (typeName) {
-            case STATE_NAMES.exerciseTypes: {
-                cLogger(`Handling create new exercise type`);
+            case STATE_NAMES.transactions: {
+                cLogger(`Handling create new transaction`);
                 cLoggerDetail(dataObj);
                 this.stateManager.addNewItemToState(typeName, dataObj, false);
                 break;
@@ -232,8 +127,8 @@ export default class Controller implements StateChangeListener, DataObjectListen
 
     delete(controller: DataObjectController, typeName: string, dataObj: any): void {
         switch (typeName) {
-            case STATE_NAMES.exerciseTypes: {
-                cLogger(`Handling delete exercise type - already managed by stateful collection view`);
+            case STATE_NAMES.transactions: {
+                cLogger(`Handling delete transaction - already managed by stateful collection view`);
                 cLoggerDetail(dataObj);
                 break;
             }
@@ -242,8 +137,8 @@ export default class Controller implements StateChangeListener, DataObjectListen
 
     update(controller: DataObjectController, typeName: string, dataObj: any): void {
         switch (typeName) {
-            case STATE_NAMES.exerciseTypes: {
-                cLogger(`Handling update exercise type`);
+            case STATE_NAMES.transactions: {
+                cLogger(`Handling update transaction`);
                 cLoggerDetail(dataObj);
                 this.stateManager.updateItemInState(typeName, dataObj, isSameMongo, false);
                 break;
@@ -251,67 +146,25 @@ export default class Controller implements StateChangeListener, DataObjectListen
         }
     }
 
-    addExerciseToCurrentWorkout(exerciseType: any): void {
-        let copyOfExercise = {...exerciseType};
-        copyOfExercise._id = v4(); // update the id to be unique for the workout
-        this.applicationView.addingExerciseToCurrentWorkout(copyOfExercise);
-    }
 
-    addWorkoutExercisesToCurrentWorkout(workout: any): void {
-        if (workout.exercises) {
-            workout.exercises.forEach((exercise: any) => {
-                this.addExerciseToCurrentWorkout(exercise);
-            });
-        }
-    }
 
     private setupDataObjectDefinitions() {
         // create the object definitions for the exercise type and workout
-        let exerciseTypeDefinition: DataObjectDefinition = ObjectDefinitionRegistry.getInstance().addDefinition(STATE_NAMES.exerciseTypes, 'Exercise', true, true, true, '_id');
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "name", "Name", FieldType.text, true, "Exercise name");
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "type", "Type", FieldType.limitedChoice, true, "Choose cardio or strength",
+        let exerciseTypeDefinition: DataObjectDefinition = ObjectDefinitionRegistry.getInstance().addDefinition(STATE_NAMES.transactions, 'Transaction', true, true, true, '_id');
+        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "name", "Name", FieldType.text, true, "Name");
+        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "type", "Type", FieldType.limitedChoice, true, "Choose deposit or withdrawal",
             new SimpleValueDataSource([
-                {name: 'Cardio', value: 'cardio'},
-                {name: 'Strength', value: 'strength'}
+                {name: 'Deposit', value: 'deposit'},
+                {name: 'Withdrawal', value: 'deposit'}
             ]));
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "duration", "Duration", FieldType.duration, true, "Exercise time");
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "sets", "Sets", FieldType.integer, false, "Number of sets");
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "reps", "Repetitions", FieldType.integer, false, "Number of reps");
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "weight", "Weight", FieldType.float, false, "Weight used");
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "distance", "Distance", FieldType.float, false, "Distance travelled");
+        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "amount", "Amount", FieldType.money, true, "Amount");
 
         cLogger(`Exercise type data object definition`);
         cLogger(exerciseTypeDefinition);
-        cLoggerDetail(ObjectDefinitionRegistry.getInstance().findDefinition('exerciseType'));
-
-        let workoutDefinition: DataObjectDefinition = ObjectDefinitionRegistry.getInstance().addDefinition(STATE_NAMES.workouts, 'Workout', true, true, true, '_id');
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(workoutDefinition, "name", "Name", FieldType.text, false, "Give the workout a name");
-        BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(workoutDefinition, "completed", "Completed", FieldType.boolean, true, "Have completed the workout");
-        let exercisesFieldDefinition: FieldDefinition = BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(workoutDefinition, "exercises", "Exercises", FieldType.collection, true, "Exercises in this workout");
-        exercisesFieldDefinition.idType = KeyType.collection;
-        exercisesFieldDefinition.collectionOfDataObjectId = exerciseTypeDefinition.id;
-
-        cLogger(`Workout data object definition`);
-        cLogger(workoutDefinition);
-        cLoggerDetail(ObjectDefinitionRegistry.getInstance().findDefinition('workout'));
-
+        cLoggerDetail(ObjectDefinitionRegistry.getInstance().findDefinition(STATE_NAMES.transactions));
 
     }
 
-    /*
-    *
-    * Simple Application state (URL, logged in user)
-    *
-     */
-    private getServerAPIURL(): string {
-        let result = "";
-        // @ts-ignore
-        if ((window.ENV) && (window.ENV.serverURL)) {
-            // @ts-ignore
-            result = window.ENV.serverURL;
-        }
-        return result;
-    }
 
 }
 

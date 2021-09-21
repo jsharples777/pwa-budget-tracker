@@ -3,13 +3,6 @@
 *  Fonts
 *
  */
-@font-face {
-    font-family: 'digital';
-    src: url('/assets/digital-7.ttf');
-}
-.enter-message {
-    width:30vw;
-}
 
 * {
     font-family: 'Oxygen', sans-serif;
@@ -87,111 +80,18 @@ i:hover {
     padding-bottom: 5px;
 }
 
-/* scrolling if the sidebar cards */
-.scroll-user-search {
-    height: 20vh;
-    max-height: 100vh;
-    overflow-y: auto;
-}
-.scroll-favourite-users {
-    height: 20vh;
-    max-height: 100vh;
-    overflow-y: auto;
-}
-.scroll-blocked-users {
-    height: 20vh;
-    max-height: 100vh;
-    overflow-y: auto;
-}
 
-.scroll-chatlogs {
-    height: 30vh;
-    max-height: 100vh;
-    overflow-y: auto;
-}
-
-.scroll-exercise-type-detail {
+.scroll-transaction-detail {
     height: 40vh;
     max-height: 40vh;
     overflow-y: auto;
 }
 
-.scroll-exercise-type-list {
+.scroll-transaction-list {
     height: 30vh;
     max-height: 30vh;
     overflow-y: auto;
 }
-
-/* The sidebar sty styles, left, right and bottom */
-.sidebar-left {
-    height: 100%; /* 100% Full-height */
-    width: 0px; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 2; /* Stay on top */
-    top: 50px;
-    left: 0;
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 10px; /* Place content 60px from the top */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
-}
-
-.sidebar-bottom {
-    height: 0px; /* 25% Full-height */
-    width: 100%; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Stay on top */
-    bottom: 0px;
-    right: 0;
-    /*overflow-y: hidden;  Disable horizontal scroll */
-    padding-bottom: 0px; /* Place content 60px from the top */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
-}
-
-.sidebar-right {
-    height: 100%; /* 100% Full-height */
-    width: 0px; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 2; /* Stay on top */
-    top: 50px;
-    right: 0;
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 10px; /* Place content 60px from the top */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
-}
-
-
-/* Position and style the close button (top right corner) */
-.closebtn-right {
-    position: absolute;
-    top: 0;
-    left: 25px;
-    font-size: 36px;
-    margin-right: 50px;
-}
-
-/* The button used to open the sidebar */
-.openbtn {
-    font-size: 20px;
-    cursor: pointer;
-    background-color: #111;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-}
-
-.openbtn:hover {
-    background-color: #444;
-}
-
-
-/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
-#main {
-    transition: margin-left .5s; /* If you want a transition effect */
-    transition: margin-right .5s; /* If you want a transition effect */
-    padding: 20px;
-}
-
-
 
 /*
 *
@@ -233,57 +133,6 @@ i:hover {
     text-align: center;
 }
 
-/*
-*
-*  Chat room styles
-*
- */
-.room {
-    background: #EAEAEA;
-    padding:0.5em;
-}
-
-.messages {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    width: auto !important;
-    overflow:auto;
-    min-height:20vw;
-    max-height:20vw;
-}
-
-.message{
-    width: 75%;
-    margin: 0.5em;
-}
-
-.my-message {
-    align-self: flex-end;
-}
-
-.message-sender{
-    font-size: x-small;
-    opacity: 0.7;
-    margin-left:5px;
-}
-
-.message-content {
-    font-size: small;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    color: rgba(0,0,0,.7);
-    background: white;
-}
-
-.my-message-content {
-    font-size: small;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    color: white;
-    background: #408EEA;
-}
-
 
 /*
 *
@@ -293,28 +142,10 @@ i:hover {
 .root {
     width: 100vw;
     height: 100vh;
-    background-image: url('../img/landscape.jpg');
+    background-image: url('../img/save-up.jpg');
     background-size: cover;
     background-repeat: repeat-y;
     padding-top: 10px;
-}
-
-.root-login {
-    width: 100vw;
-    height: 100vh;
-    background-image: url('../img/dumbbells.jpg');
-    background-size: cover;
-    background-repeat: repeat-y;
-    padding-top: 110px;
-}
-
-.root-registration {
-    width: 100vw;
-    height: 100vh;
-    background-image: url('../img/physiotherapy.jpg');
-    background-size: cover;
-    background-repeat: repeat-y;
-    padding-top: 110px;
 }
 
 /* context menu */
@@ -337,23 +168,6 @@ i:hover {
     .notifications .notification {
         width: 50vw
     }
-    .timer {
-        font-size: 20pt;
-        width: 40%;
-    }
-    .messages {
-        min-height: 40vw;
-        max-height: 40vw;
-    }
-    .root-login {
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
-    .root-registration {
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
-
     .btn-circle.btn-md {
         width: 40px;
         height: 40px;
@@ -367,14 +181,6 @@ i:hover {
 @media screen and (max-width: 467px) {
     .notifications .notification {
         width: 80vw
-    }
-    .sidebar-left {
-        padding-top: 0px;
-        top:0;
-    }
-    .sidebar-right {
-        padding-top: 0px;
-        top:0;
     }
     .btn-circle.btn-md {
         width: 50px;

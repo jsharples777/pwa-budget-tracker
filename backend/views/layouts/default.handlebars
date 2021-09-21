@@ -8,30 +8,39 @@
 {{{body}}}
 {{> modals/alert }}
 {{> modals/context-menu }}
-<div id="root" class="root">
-    <section class="pt-5 pb-5">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-6">
-                    <h3 class="mb-3 text-white">Workouts </h3>
-                </div>
-                <div class="col-6 text-right">
-                    <a class="btn btn-primary mb-3 mr-1" href="#workoutsContainer" role="button" data-slide="prev">
-                        <i class="fa fa-arrow-left"></i>
-                    </a>
-                    <a class="btn btn-primary mb-3 " href="#workoutsContainer" role="button" data-slide="next">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="col-12">
-                    <div id="workoutsContainer" class="carousel slide" data-ride="carousel" data-interval="false">
-                        <div id="workouts" class="carousel-inner">
+<div id="root" class="root container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-4">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card" id="transactionsContainer">
+                                <div class="card-header">Transactions</div>
+                                <div class="card-body scroll-transaction-list">
+                                    <div id="transactions" class="list-group list-group-flush">
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary" id="addNew">Add New&nbsp;Transaction<i class="fas fa-coins"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-3" id="transactionDetailsContainer">
+                                <div class="card-body scroll-transaction-detail">
+                                    <div id="transactionDetail">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
-    </section>
+
+        <div class="col-sm-12 col-md-8">
+            <canvas id="budget"></canvas>
+        </div>
+    </div>
 
 </div>
 

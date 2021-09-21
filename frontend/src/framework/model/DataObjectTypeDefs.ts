@@ -8,6 +8,7 @@ export enum FieldType {
     text = 'Text',
     integer = 'Integer',
     float = 'Number',
+    money = 'Money',
     date = 'Date',
     time = 'Time',
     shortTime = 'Short Time',

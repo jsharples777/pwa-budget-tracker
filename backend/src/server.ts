@@ -29,10 +29,10 @@ const isDevelopment = (process.env.MODE === 'Development');
 
 
 if (isDevelopment) {
-    debug.enable('server db api route api-transactions');
+    debug.enable('server db api route mongo-data-source api-transactions');
 }
 else {
-    debug.enable('server api route');
+    debug.enable('server api route mongo-data-source');
 }
 
 
@@ -96,12 +96,9 @@ MongoDataSource.getInstance();
 import routes from './routes';
 app.use('/', routes);// add the middleware path routing
 import apiRoutes from './routes/api';
+
 app.use('/api',apiRoutes);
 
-// database connection
-serverDebug('Establishing database connection with Mongoose');
-// @ts-ignore
-mongoose.connect(process.env.DB_URL);
 
 // route for the env.js file being served to the client
 serverDebug('Setting the environment variables for the browser to access');
