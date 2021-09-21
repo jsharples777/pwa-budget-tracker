@@ -2,13 +2,12 @@ import express from 'express';
 import {MongoDataSource} from "../../db/MongoDataSource";
 const router = express.Router();
 import debug from 'debug';
-import {DeleteResult, Document, UpdateResult} from 'mongodb';
-import {DataMessage} from "../../socket/SocketTypes";
-import socketManager from "../../socket/SocketManager";
+import {DeleteResult, Document} from 'mongodb';
 
-const logger = debug('api-exercise-types');
 
-// The `/api/exercise types` endpoint
+const logger = debug('api-transactions');
+
+// The `/api/transaction` endpoint
 
 router.get('/', (req, res) => {
     // find all exercise types
@@ -40,16 +39,7 @@ router.post('/', (req, res) => {
     const collection = process.env.DB_COLLECTION_EXERCISE_TYPES || 'exercise-types';
     MongoDataSource.getInstance().getDatabase().collection(collection).insertOne(req.body).then((value) => {
         logger(value);
-        // @ts-ignore
-        let user;
-        if (req.user) {
-            // @ts-ignore
-            user = req.user.id;
-        }
-        else { user = "-1"}
-        // @ts-ignore
-        const message:DataMessage = {type:"create",stateName: "exerciseType",data:req.body, user:user,}
-        socketManager.sendDataMessage(message);
+
 
         res.json(req.body);
     })
@@ -63,15 +53,7 @@ router.put('/', (req, res) => {
     const collection = process.env.DB_COLLECTION_EXERCISE_TYPES || 'exercise-types';
     MongoDataSource.getInstance().getDatabase().collection(collection).replaceOne({_id:req.body._id},req.body).then((result) => {
         logger(result);
-            let user;
-            if (req.user) {
-                // @ts-ignore
-                user = req.user.id;
-            }
-            else { user = "-1"}
-            // @ts-ignore
-            const message:DataMessage = {type:"update",stateName: "exerciseType",data:req.body, user:user,}
-            socketManager.sendDataMessage(message);
+
             res.json(req.body);
     })
     .catch((err) => {
@@ -83,15 +65,7 @@ router.put('/', (req, res) => {
 router.delete('/:id', (req, res) => {
     const collection = process.env.DB_COLLECTION_EXERCISE_TYPES || 'exercise-types';
     MongoDataSource.getInstance().getDatabase().collection(collection).deleteOne({_id:req.params.id}).then((result:DeleteResult) => {
-        let user;
-        if (req.user) {
-            // @ts-ignore
-            user = req.user.id;
-        }
-        else { user = "-1"}
-        // @ts-ignore
-        const message:DataMessage = {type:"delete",stateName: "exerciseType",data:{ _id: req.params.id},user:user,}
-        socketManager.sendDataMessage(message);
+
         logger(result);
         res.json(result);
 
