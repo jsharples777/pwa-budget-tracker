@@ -2,16 +2,10 @@
 <html>
 {{> headers/header-main }}
 <body>
-{{> navigation/navigation }}
 {{#if error}}
     <div class="alert alert-danger">{{error}}</div>
 {{/if}}
 {{{body}}}
-{{> sidebars/exercise-types-sb }}
-{{> sidebars/user-search-sb }}
-{{> sidebars/chat-sb }}
-{{> sidebars/workout-summary-sb }}
-{{> sidebars/current-workout-sb }}
 {{> modals/alert }}
 {{> modals/context-menu }}
 <div id="root" class="root">
@@ -40,17 +34,9 @@
     </section>
 
 </div>
-<div><canvas id="test" ></canvas></div>
-{{> footers/footer-main }}
+
+
 </body>
-{{#if user}}
-    <script>
-        const loggedInUser = {
-            _id: '{{user._id}}',
-            username: '{{user.username}}'
-        };
-    </script>
-{{/if}}
 {{> jsincludes/js-vendors}}
 {{> jsincludes/js-popovers-tooltips}}
 {{> jsincludes/js-app}}
