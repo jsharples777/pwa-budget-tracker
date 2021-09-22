@@ -10,17 +10,17 @@ import {DataObjectDefinition, FieldDefinition, FieldType} from "../framework/mod
 import {ObjectDefinitionRegistry} from "../framework/model/ObjectDefinitionRegistry";
 import {BasicObjectDefinitionFactory} from "../framework/model/BasicObjectDefinitionFactory";
 import {SimpleValueDataSource} from "../framework/ui/helper/SimpleValueDataSource";
-import {KeyType} from "../framework/ui/ConfigurationTypes";
 import {DataObjectListener} from "../framework/model/DataObjectListener";
 import {DataObjectController} from "../framework/model/DataObjectController";
 import {isSameMongo} from "../framework/util/EqualityFunctions";
 import DownloadManager from "../framework/network/DownloadManager";
+import {DefaultValueGenerator} from "../framework/model/DefaultValueGenerator";
 
 
 const cLogger = debug('controller-ts');
 const cLoggerDetail = debug('controller-ts-detail');
 
-export default class Controller implements StateChangeListener, DataObjectListener {
+export default class Controller implements DataObjectListener {
     private static _instance: Controller;
     protected applicationView: any;
     protected clientSideStorage: any;
@@ -65,12 +65,6 @@ export default class Controller implements StateChangeListener, DataObjectListen
 
         this.stateManager = aggregateSM;
 
-        // state listener
-        this.stateChanged = this.stateChanged.bind(this);
-        this.stateChangedItemAdded = this.stateChangedItemAdded.bind(this);
-        this.stateChangedItemRemoved = this.stateChangedItemRemoved.bind(this);
-        this.stateChangedItemUpdated = this.stateChangedItemUpdated.bind(this);
-
         // data objects
         this.setupDataObjectDefinitions();
 
@@ -98,21 +92,6 @@ export default class Controller implements StateChangeListener, DataObjectListen
     public getListenerName(): string {
         return 'Controller';
     }
-
-
-
-    stateChangedItemAdded(managerName: string, name: string, itemAdded: any): void {
-    }
-
-    stateChangedItemRemoved(managerName: string, name: string, itemRemoved: any): void {
-    }
-
-    stateChangedItemUpdated(managerName: string, name: string, itemUpdated: any, itemNewValue: any): void {
-    }
-
-    stateChanged(managerName: string, name: string, values: any) {
-    }
-
 
     create(controller: DataObjectController, typeName: string, dataObj: any): void {
         switch (typeName) {
@@ -150,19 +129,17 @@ export default class Controller implements StateChangeListener, DataObjectListen
 
     private setupDataObjectDefinitions() {
         // create the object definitions for the exercise type and workout
-        let exerciseTypeDefinition: DataObjectDefinition = ObjectDefinitionRegistry.getInstance().addDefinition(STATE_NAMES.transactions, 'Transaction', true, true, true, '_id');
+        let exerciseTypeDefinition: DataObjectDefinition = ObjectDefinitionRegistry.getInstance().addDefinition(STATE_NAMES.transactions, 'Transaction', true, true, false, '_id');
         BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "name", "Name", FieldType.text, true, "Name");
         BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "type", "Type", FieldType.limitedChoice, true, "Choose deposit or withdrawal",
             new SimpleValueDataSource([
                 {name: 'Deposit', value: 'deposit'},
-                {name: 'Withdrawal', value: 'deposit'}
+                {name: 'Withdrawal', value: 'withdrawal'}
             ]));
         BasicObjectDefinitionFactory.getInstance().addStringFieldToObjDefinition(exerciseTypeDefinition, "amount", "Amount", FieldType.money, true, "Amount");
-
-        cLogger(`Exercise type data object definition`);
+        BasicObjectDefinitionFactory.getInstance().addCreatedDateToDefinition(exerciseTypeDefinition);
+        BasicObjectDefinitionFactory.getInstance().setDefaultValueForField(exerciseTypeDefinition, "type",new DefaultValueGenerator('withdrawal'));
         cLogger(exerciseTypeDefinition);
-        cLoggerDetail(ObjectDefinitionRegistry.getInstance().findDefinition(STATE_NAMES.transactions));
-
     }
 
 

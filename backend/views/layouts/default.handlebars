@@ -9,6 +9,7 @@
 {{> modals/alert }}
 {{> modals/context-menu }}
 <div id="root" class="root container-fluid">
+    <div id="notifications" class="notifications"></div>
     <div class="row">
         <div class="col-sm-12 col-md-4">
                 <div class="container-fluid">
@@ -21,7 +22,8 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <div class="d-flex justify-content-end">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <div><strong>Current Balance: </strong><span id="total"></span></div>
                                         <button type="submit" class="btn btn-primary" id="addNew">Add New&nbsp;Transaction<i class="fas fa-coins"></i></button>
                                     </div>
                                 </div>
@@ -37,8 +39,8 @@
                 </div>
         </div>
 
-        <div class="col-sm-12 col-md-8">
-            <canvas id="budget"></canvas>
+        <div class="col-sm-12 col-md-8" id="budgetContainer">
+            <canvas id="budgetChart"></canvas>
         </div>
     </div>
 

@@ -6,15 +6,15 @@ import {isSameMongo} from "../../framework/util/EqualityFunctions";
 import {CollectionViewListener} from "../../framework/ui/view/interface/CollectionViewListener";
 import {View} from "../../framework/ui/view/interface/View";
 
-import {WorkoutSummaryRenderer} from "../renderer/WorkoutSummaryRenderer";
+import {BudgetSummaryRenderer} from "../renderer/BudgetSummaryRenderer";
 
 
-export class WorkoutSummaryView extends AbstractStatefulCollectionView implements CollectionViewListener {
+export class BudgetSummaryView extends AbstractStatefulCollectionView implements CollectionViewListener {
 
     private static DOMConfig: CollectionViewDOMConfig = {
         viewConfig: {
-            resultsContainerId: 'workoutSummaryChart',
-            dataSourceId: VIEW_NAME.workoutSummary,
+            resultsContainerId: 'budgetContainer',
+            dataSourceId: VIEW_NAME.budgetSummary,
         },
         resultsElementType: 'canvas',
         resultsClasses: '',
@@ -30,8 +30,8 @@ export class WorkoutSummaryView extends AbstractStatefulCollectionView implement
 
 
     constructor() {
-        super(WorkoutSummaryView.DOMConfig, Controller.getInstance().getStateManager(), STATE_NAMES.workouts);
-        this.renderer = new WorkoutSummaryRenderer(this, this);
+        super(BudgetSummaryView.DOMConfig, Controller.getInstance().getStateManager(), STATE_NAMES.transactions);
+        this.renderer = new BudgetSummaryRenderer(this, this);
     }
 
     canDeleteItem(view: View, selectedItem: any): boolean {

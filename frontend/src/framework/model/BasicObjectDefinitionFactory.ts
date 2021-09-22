@@ -1,6 +1,6 @@
 import {KeyType} from "../ui/ConfigurationTypes";
 import {BasicFieldOperations} from "./BasicFieldOperations";
-import {DataObjectDefinition, FieldDefinition, FieldType} from "./DataObjectTypeDefs";
+import {DataObjectDefinition, FieldDefinition, FieldType, FieldValueGenerator} from "./DataObjectTypeDefs";
 import {FieldValueOptions} from "./CommonTypes";
 import {DisplayOrder} from "../ui/form/FormUITypeDefs";
 
@@ -112,6 +112,10 @@ export class BasicObjectDefinitionFactory {
         fieldDef.displayOnly = true;
     }
 
+    public addCreatedDateToDefinition(def:DataObjectDefinition) {
+        this.addCreatedDateToArray(def.fields);
+    }
+
     private addModifiedDateToArray(fields: FieldDefinition[]) {
         let fieldDef = this.addStringFieldToArray(fields, FIELD_ModifiedOn, FIELD_ModifiedOn_Desc, FieldType.datetime, true, FIELD_ModifiedOn_Desc);
         // add generator
@@ -121,6 +125,10 @@ export class BasicObjectDefinitionFactory {
             onModify: true
         }
         fieldDef.displayOnly = true;
+    }
+
+    public addModifiedDateToDefinition(def:DataObjectDefinition) {
+        this.addModifiedDateToDefinition(def);
     }
 
     private addCreatedByToArray(fields: FieldDefinition[]) {
@@ -179,6 +187,21 @@ export class BasicObjectDefinitionFactory {
 
     private addNumericFieldToArray(fields: FieldDefinition[], id: string, displayName: string, type: FieldType, isMandatory: boolean = false, description: string | null = null, datasource: FieldValueOptions | null = null): FieldDefinition {
         return this.addFieldToArray(fields, KeyType.string, id, displayName, type, isMandatory, description, datasource);
+    }
+
+    public setDefaultValueForField(def:DataObjectDefinition,id:string,generator:FieldValueGenerator) {
+        let foundIndex = def.fields.findIndex((field) => field.id === id);
+        if (foundIndex >= 0) {
+            const field = def.fields[foundIndex];
+            if (field) {
+                let generatorDef = {
+                    generator:generator,
+                    onCreation:true,
+                    onModify:false
+                };
+                field.generator = generatorDef;
+            }
+        }
     }
 
 }

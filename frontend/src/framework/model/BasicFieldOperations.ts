@@ -5,6 +5,7 @@ import {FieldFormatter, FieldRenderer, FieldValidator, ValidationResponse} from 
 import {FieldDefinition, FieldType, FieldValueGenerator} from "./DataObjectTypeDefs";
 import debug from 'debug';
 import {KeyType} from "../ui/ConfigurationTypes";
+import {SecurityManager} from "../security/SecurityManager";
 
 const flogger = debug('basic-field-operations-formatter');
 const vlogger = debug('basic-field-operations-validator');
@@ -25,6 +26,7 @@ export class BasicFieldOperations implements FieldFormatter, FieldRenderer, Fiel
     private static basicPasswordRegex: RegExp = /^[a-zA-Z0-9]{8,15}$/;
     private static integerRegex: RegExp = /^[+-]?\d+$/;
     private static floatRegexp: RegExp = /^[+-]?\d+(\.\d+)?$/;
+    private static moneyRegexp: RegExp = /^[+-]?\d+\.\d{2}$/;
     private static booleanRegexp: RegExp = /^true|false$/;
     private static durationRegexp: RegExp = /^(\d+:)?[0-5]?\d:[0-5]\d$/;
     private previousFieldValues: FieldNameValue[];
@@ -63,6 +65,13 @@ export class BasicFieldOperations implements FieldFormatter, FieldRenderer, Fiel
                 break;
             }
             case (FieldType.float): {
+                let parsed = parseFloat(currentValue);
+                if (!isNaN(parsed)) {
+                    result = parsed;
+                }
+                break;
+            }
+            case (FieldType.money): {
                 let parsed = parseFloat(currentValue);
                 if (!isNaN(parsed)) {
                     result = parsed;
@@ -132,6 +141,13 @@ export class BasicFieldOperations implements FieldFormatter, FieldRenderer, Fiel
                     response.isValid = BasicFieldOperations.floatRegexp.test(currentValue);
                     if (!response.isValid) {
                         response.message = `${field.displayName} must be 00.00`;
+                    }
+                    break;
+                }
+                case (FieldType.money): {
+                    response.isValid = BasicFieldOperations.moneyRegexp.test(currentValue);
+                    if (!response.isValid) {
+                        response.message = `${field.displayName} must be 0.00`;
                     }
                     break;
                 }
@@ -293,6 +309,10 @@ export class BasicFieldOperations implements FieldFormatter, FieldRenderer, Fiel
                 result = '0.0';
                 break;
             }
+            case (FieldType.money): {
+                result = '0.00';
+                break;
+            }
             case (FieldType.id): {
                 result = '-1';
                 break;
@@ -334,7 +354,7 @@ export class BasicFieldOperations implements FieldFormatter, FieldRenderer, Fiel
                 break;
             }
             case (FieldType.userId): {
-                result = `${Controller.getInstance().getLoggedInUsername()}`;
+                result = `${SecurityManager.getInstance().getLoggedInUsername()}`;
                 break;
             }
         }

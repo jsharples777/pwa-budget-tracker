@@ -4,21 +4,69 @@
 import {ContextualInformationHelper} from "./framework/ui/context/ContextualInformationHelper";
 import debug from 'debug';
 import Controller from './app/Controller';
-import {API_Config, NAVIGATION, STATE_NAMES} from "./app/AppTypes";
-import {ExerciseTypesCompositeView} from "./app/view/ExerciseTypesCompositeView";
-import WorkoutSummarySidebar from "./app/sidebar/WorkoutSummarySidebar";
-import {WorkoutSummaryView} from "./app/view/WorkoutSummaryView";
-import CurrentWorkoutSidebar from "./app/sidebar/CurrentWorkoutSidebar";
-import {CurrentWorkoutCompositeView} from "./app/view/CurrentWorkoutCompositeView";
-import {WorkoutsViewUsingContext} from "./app/view/WorkoutsViewUsingContext";
+import StateChangeListener from "./framework/state/StateChangeListener";
+import {ELEMENT, STATE_NAMES} from "./app/AppTypes";
+import {TransactionsCompositeView} from "./app/view/TransactionsCompositeView";
+import {BudgetSummaryView} from "./app/view/BudgetSummaryView";
 
 
-localStorage.debug = 'context-helper';
+//localStorage.debug = 'api-ts transactions-composite-view transactions-view ';
+localStorage.debug = 'abstract-form abstract-form-detail basic-form basic-form-detail form-detail-view-renderer';
 
 debug.log = console.info.bind(console);
 
 
 const logger = debug('app');
+
+class BudgetBalance implements StateChangeListener {
+    private totalEl:HTMLSpanElement|null = null;
+
+    constructor() {}
+
+    onDocumentLoaded() {
+        this.totalEl = document.getElementById(ELEMENT.total);
+        Controller.getInstance().getStateManager().addChangeListenerForName(STATE_NAMES.transactions,this);
+    }
+
+    getListenerName(): string {
+        return "Balance";
+    }
+
+    stateChanged(managerName: string, name: string, newValue: any): void {
+        let balance = 0.0;
+        if (this.totalEl && newValue && (newValue.length > 0)) {
+            newValue.forEach((value:any) => {
+                if (value.type) {
+                    switch(value.type) {
+                        case 'deposit': {
+                            balance += parseFloat(value.amount);
+                            break;
+                        }
+                        case 'withdrawal': {
+                            balance -= parseFloat(value.amount);
+                            break;
+                        }
+                    }
+                }
+            });
+            this.totalEl.innerHTML = '$' + balance;
+        }
+    }
+
+    stateChangedItemAdded(managerName: string, name: string, itemAdded: any): void {
+        this.stateChanged(managerName,name,Controller.getInstance().getStateManager().getStateByName(STATE_NAMES.transactions));
+    }
+
+    stateChangedItemRemoved(managerName: string, name: string, itemRemoved: any): void {
+        this.stateChanged(managerName,name,Controller.getInstance().getStateManager().getStateByName(STATE_NAMES.transactions));
+    }
+
+    stateChangedItemUpdated(managerName: string, name: string, itemUpdated: any, itemNewValue: any): void {
+        this.stateChanged(managerName,name,Controller.getInstance().getStateManager().getStateByName(STATE_NAMES.transactions));
+    }
+
+}
+
 
 export default class App  {
 
@@ -40,20 +88,23 @@ export default class App  {
         return App._instance;
     }
 
-    getCurrentUser() {
-        return Controller.getInstance().getLoggedInUserId();
-    }
-
     onDocumentLoad() {
         logger('document loaded');
         // @ts-ignore
         this.thisEl = document.getElementById('root');
 
+        new TransactionsCompositeView().onDocumentLoaded();
+        new BudgetSummaryView().onDocumentLoaded();
 
+
+        new BudgetBalance().onDocumentLoaded();
         ContextualInformationHelper.getInstance().onDocumentLoaded();
         Controller.getInstance().onDocumentLoaded();
 
+
+
     }
+
 
 
 

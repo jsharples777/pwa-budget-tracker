@@ -11,6 +11,7 @@ export const API_Config = {
 
 export const VIEW_NAME = {
     transactions: 'transactions',
+    budgetSummary: 'budgetChart'
 }
 
 export const VIEW_CONTAINER = {
@@ -19,5 +20,9 @@ export const VIEW_CONTAINER = {
 
 export const BUTTON = {
     createNew: 'addNew'
+}
+
+export const ELEMENT = {
+    total: 'total'
 }
 
