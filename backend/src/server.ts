@@ -78,9 +78,10 @@ if (isDevelopment) {
 
     /* log call requests with body */
     app.use((request, response, next) => {
-        serverDebug(`Received ${request.method} request for ${request.url} with/without body`);
+        serverDebug(`Received ${request.method} request for ${request.url} with/without body and params`);
+        serverDebug(request.params);
         if (request.body) {
-            if (process.env.SHOW_BODY) console.log(request.body);
+            if (process.env.SHOW_BODY) serverDebug(request.body);
         }
         next();
     });

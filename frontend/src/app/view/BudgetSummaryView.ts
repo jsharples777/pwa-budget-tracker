@@ -13,7 +13,7 @@ export class BudgetSummaryView extends AbstractStatefulCollectionView implements
 
     private static DOMConfig: CollectionViewDOMConfig = {
         viewConfig: {
-            resultsContainerId: 'budgetContainer',
+            resultsContainerId: VIEW_NAME.budgetSummary,
             dataSourceId: VIEW_NAME.budgetSummary,
         },
         resultsElementType: 'canvas',

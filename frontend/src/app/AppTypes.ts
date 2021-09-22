@@ -16,6 +16,7 @@ export const VIEW_NAME = {
 
 export const VIEW_CONTAINER = {
     transactionDetail: "transactionDetail",
+    transactionDetailsContainer: 'transactionDetailsContainer'
 }
 
 export const BUTTON = {

@@ -14,18 +14,18 @@ class BrowserUtil {
         }
     }
 
-    scrollToBottomNow(element: HTMLElement): void {
+    scrollToBottomNow(element: HTMLElement, offset:number = 100): void {
         if (element) {
-            element.scrollTop = element.scrollHeight - element.clientHeight + 100;
+            element.scrollTop = element.scrollHeight - element.clientHeight + offset;
         }
     }
 
-    scrollToBottomSmooth(element: HTMLElement): void {
+    scrollToBottomSmooth(element: HTMLElement,offset:number = 100): void {
         if (element) {
             element.scrollIntoView({
                 behavior: 'smooth',
             });
-            element.scrollTop = element.scrollHeight - element.clientHeight + 100;
+            element.scrollTop = element.scrollHeight - element.clientHeight + offset;
         }
     }
 

@@ -227,6 +227,17 @@ export class ListViewRendererUsingContext implements CollectionViewRenderer {
                         }
                     }
                     break;
+
+                }
+                case Modifier.warning: {
+                    avLogger(`view ${this.view.getName()}: warning item`);
+                    browserUtil.addRemoveClasses(childEl, uiConfig.modifiers.warning);
+                    if (uiConfig.icons && uiConfig.icons.warning) {
+                        let iconEl = document.createElement('i');
+                        browserUtil.addRemoveClasses(iconEl, uiConfig.icons.warning);
+                        textEl.appendChild(iconEl);
+                    }
+                    break;
                 }
             }
         }

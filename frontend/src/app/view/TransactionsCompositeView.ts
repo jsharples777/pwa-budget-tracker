@@ -11,10 +11,12 @@ import debug from "debug";
 import {TransactionsView} from "./TransactionsView";
 import {DefaultPermissionChecker} from "../../framework/ui/view/implementation/DefaultPermissionChecker";
 import {Form} from "../../framework/ui/form/Form";
+import {FormEvent, FormEventType, FormListener} from "../../framework/ui/form/FormListener";
+import browserUtil from "../../framework/util/BrowserUtil";
 
 const logger = debug('transactions-composite-view');
 
-export class TransactionsCompositeView {
+export class TransactionsCompositeView implements FormListener{
 
     constructor() {
     }
@@ -44,6 +46,7 @@ export class TransactionsCompositeView {
 
             const detailForm: Form | null = transactionDetailViewRenderer.getForm();
             console.log(detailForm);
+            detailForm?.addFormListener(this);
 
 
             // setup the event handling for the create new exercise type button
@@ -53,17 +56,53 @@ export class TransactionsCompositeView {
                 addTransactionButton.addEventListener('click', (event) => {
                     logger(`Asking view linker to start a new object`);
                     viewLinker.startNewObject();
+                    const detailContainerEl = document.getElementById(VIEW_CONTAINER.transactionDetailsContainer)
+                    if (detailContainerEl) {
+                        browserUtil.addRemoveClasses(detailContainerEl,'d-none',false);
+                    }
                 });
 
             }
 
             viewLinker.addListener(Controller.getInstance());
+            if (window.innerWidth < 415) {
+                const detailContainerEl = document.getElementById(VIEW_CONTAINER.transactionDetailsContainer)
+                if (detailContainerEl) {
+                    browserUtil.addRemoveClasses(detailContainerEl,'d-none');
+                }
+            }
         }
     }
 
+    formChanged(event: FormEvent, formValues?: any): boolean {
+        if (event.eventType === FormEventType.SAVED) {
+            if (window.innerWidth < 415) {
+                const detailContainerEl = document.getElementById(VIEW_CONTAINER.transactionDetailsContainer)
+                if (detailContainerEl) {
+                    browserUtil.addRemoveClasses(detailContainerEl,'d-none');
+                }
+            }
 
+            // scroll to last
+            const scrollViewEl = document.getElementById('transactionListScroll');
+            if (scrollViewEl) {
+                const itemEls = scrollViewEl.querySelectorAll('a');
+                if (itemEls.length > 0) {
+                    const itemEl = itemEls.item(itemEls.length - 1)
+                    browserUtil.scrollToBottomSmooth(itemEl,itemEl.scrollHeight);
+                }
 
-
-
+            }
+        }
+        if (event.eventType === FormEventType.CANCELLED) {
+            if (window.innerWidth < 415) {
+                const detailContainerEl = document.getElementById(VIEW_CONTAINER.transactionDetailsContainer)
+                if (detailContainerEl) {
+                    browserUtil.addRemoveClasses(detailContainerEl, 'd-none');
+                }
+            }
+        }
+        return false;
+    }
 
 }

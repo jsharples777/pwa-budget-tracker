@@ -48,7 +48,8 @@ export default class Controller implements DataObjectListener {
                 stateName: STATE_NAMES.transactions,
                 serverURL: '',
                 api: API_Config.transaction,
-                isActive: true
+                isActive: true,
+                idField: '_id',
             },
         ]);
 

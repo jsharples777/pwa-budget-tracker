@@ -11,35 +11,42 @@
 <div id="root" class="root container-fluid">
     <div id="notifications" class="notifications"></div>
     <div class="row">
-        <div class="col-sm-12 col-md-4">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card" id="transactionsContainer">
-                                <div class="card-header">Transactions</div>
-                                <div class="card-body scroll-transaction-list">
-                                    <div id="transactions" class="list-group list-group-flush">
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <div><strong>Current Balance: </strong><span id="total"></span></div>
-                                        <button type="submit" class="btn btn-primary" id="addNew">Add New&nbsp;Transaction<i class="fas fa-coins"></i></button>
-                                    </div>
+        <div class="col-12">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="card" id="transactionsContainer">
+                            <div class="card-header">Transactions</div>
+                            <div class="card-body scroll-transaction-list" id="transactionListScroll">
+                                <div id="transactions" class="list-group list-group-flush">
                                 </div>
                             </div>
-                            <div class="card mt-3" id="transactionDetailsContainer">
-                                <div class="card-body scroll-transaction-detail">
-                                    <div id="transactionDetail">
+                            <div class="card-footer">
+                                <div class="container-fluid p-0">
+                                    <div class="row>">
+                                        <div class="col-sm-12 col-md-12 col-lg-6 p-0 pb-md-2"><strong>Current
+                                            Balance: </strong><span id="total"></span></div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6 p-0">
+                                            <button type="submit" class="btn btn-primary" id="addNew">Add New&nbsp;Transaction<i
+                                                    class="fas fa-coins"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="card mt-3" id="transactionDetailsContainer">
+                            <div class="card-body scroll-transaction-detail">
+                                <div id="transactionDetail">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
         </div>
-
-        <div class="col-sm-12 col-md-8" id="budgetContainer">
+        <div class="col-sm-12" id="budgetContainer">
             <canvas id="budgetChart"></canvas>
         </div>
     </div>

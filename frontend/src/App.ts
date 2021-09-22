@@ -10,8 +10,8 @@ import {TransactionsCompositeView} from "./app/view/TransactionsCompositeView";
 import {BudgetSummaryView} from "./app/view/BudgetSummaryView";
 
 
-//localStorage.debug = 'api-ts transactions-composite-view transactions-view ';
-localStorage.debug = 'abstract-form abstract-form-detail basic-form basic-form-detail form-detail-view-renderer';
+//localStorage.debug = 'api-ts state-manager-api';
+//localStorage.debug = 'abstract-form abstract-form-detail basic-form basic-form-detail form-detail-view-renderer';
 
 debug.log = console.info.bind(console);
 
@@ -49,7 +49,16 @@ class BudgetBalance implements StateChangeListener {
                     }
                 }
             });
-            this.totalEl.innerHTML = '$' + balance;
+            let formatter = new Intl.NumberFormat(undefined, {
+                style: 'currency',
+                currency: 'AUD',
+
+                // These options are needed to round to whole numbers if that's what you want.
+                //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+                //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+            });
+
+            this.totalEl.innerHTML = formatter.format(balance);;
         }
     }
 

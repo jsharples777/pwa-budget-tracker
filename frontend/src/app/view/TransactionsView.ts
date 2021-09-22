@@ -11,6 +11,7 @@ import {ListViewRendererUsingContext} from "../../framework/ui/view/renderer/Lis
 import {CollectionViewEventHandlerDelegateUsingContext} from "../../framework/ui/view/delegate/CollectionViewEventHandlerDelegateUsingContext";
 import {CollectionViewListenerForwarder} from "../../framework/ui/view/delegate/CollectionViewListenerForwarder";
 import moment from "moment";
+import {ContextualInformationHelper} from "../../framework/ui/context/ContextualInformationHelper";
 
 const logger = debug('transactions-view');
 
@@ -28,21 +29,26 @@ export class TransactionsView extends AbstractStatefulCollectionView implements 
         keyType: KeyType.string,
         modifiers: {
             normal: '',
-            inactive: 'list-group-item-warning',
+            inactive: '',
             active: 'list-group-item-primary',
             warning: 'list-group-item-warning'
         },
         icons: {
             normal: '',
-            inactive: 'fas fa-arrow-alt-circle-down',
-            active: 'fas fa-arrow-alt-circle-up',
-            warning: 'fas fa-arrow-alt-circle-down'
+            inactive: '',
+            active: '',
+            warning: '',
         },
         detail: {
             containerClasses: 'd-flex w-100 justify-content-between',
-            textElementType: 'span',
-            textElementClasses: 'mb-1',
+            textElementType: 'div',
+            textElementClasses: 'container-fluid transaction-text',
             select: false,
+            delete: {
+                buttonClasses:'btn bg-danger text-white btn-circle btn-sm',
+                buttonText:'',
+                iconClasses: 'fas fa-trash-alt'
+            }
         },
     };
 
@@ -53,6 +59,7 @@ export class TransactionsView extends AbstractStatefulCollectionView implements 
         this.eventHandlerDelegate = new CollectionViewEventHandlerDelegateUsingContext(this, <CollectionViewListenerForwarder>this.eventForwarder);
         this.getIdForItemInNamedCollection = this.getIdForItemInNamedCollection.bind(this);
         this.getItemId = this.getItemId.bind(this);
+        ContextualInformationHelper.getInstance().addContextFromView(this,STATE_NAMES.transactions,'Exercise Types');
     }
 
 
@@ -60,7 +67,7 @@ export class TransactionsView extends AbstractStatefulCollectionView implements 
         logger(item);
         let buffer = '';
         const dateDisplay = moment(item.createdOn,'YYYYMMDDHHmmss').format('DD/MM/YY HH:mm');
-        buffer += `<strong>${dateDisplay}</strong>: `;
+        buffer += `<strong>${dateDisplay}</strong> - ${item.name}:`;
         if (item.type === 'deposit') {
             buffer += '+';
         } else {
@@ -82,14 +89,14 @@ export class TransactionsView extends AbstractStatefulCollectionView implements 
         if (item.type === 'deposit') {
            return Modifier.active;
         } else {
-           return Modifier.inactive;
+           return Modifier.warning;
         }
         return Modifier.normal;
     }
 
 
     canDeleteItem(view: View, selectedItem: any): boolean {
-        return false;
+        return true;
     }
 
     compareItemsForEquality(item1: any, item2: any): boolean {
@@ -103,7 +110,7 @@ export class TransactionsView extends AbstractStatefulCollectionView implements 
     renderDisplayForItemInNamedCollection(containerEl: HTMLElement, name: string, item: any): void {
         let buffer = '';
         const dateDisplay = moment(item.createdOn,'YYYYMMDDHHmmss').format('DD/MM/YY HH:mm');
-        buffer += `<div class="row w-100"><div><strong class="col-4">${dateDisplay}</strong>: </div><div class="col-6 text-right">`;
+        buffer += `<div class="row"><div class="col-md-12 col-lg-6"><strong>${dateDisplay}</strong> - ${item.name}</div><div class="col-md-12 col-lg text-right">`;
         if (item.type === 'deposit') {
             buffer += '+';
         } else {
@@ -122,7 +129,7 @@ export class TransactionsView extends AbstractStatefulCollectionView implements 
     }
 
     hasPermissionToDeleteItemInNamedCollection(name: string, item: any): boolean {
-        return false;
+        return true;
     }
 
     hasPermissionToUpdateItemInNamedCollection(name: string, item: any): boolean {

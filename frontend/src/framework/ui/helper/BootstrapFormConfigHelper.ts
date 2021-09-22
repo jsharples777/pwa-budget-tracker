@@ -107,7 +107,7 @@ export class BootstrapFormConfigHelper {
                 field: fieldDef,
                 displayOrder: displayOrderValue,
                 elementType: fieldType,
-                elementClasses: 'form-control col-sm-9',
+                elementClasses: 'form-control col-md-12 col-lg-9',
                 renderer: fieldOperations,
                 formatter: fieldOperations,
             }
