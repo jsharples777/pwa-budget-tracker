@@ -736,7 +736,14 @@ var TransactionsView = /*#__PURE__*/function (_AbstractStatefulColl) {
       buffer += '-';
     }
 
-    buffer += "" + item.amount;
+    var formatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'AUD' // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+
+    });
+    buffer += formatter.format(parseFloat(item.amount));
     return buffer;
   };
 
@@ -763,7 +770,25 @@ var TransactionsView = /*#__PURE__*/function (_AbstractStatefulColl) {
   };
 
   _proto.renderDisplayForItemInNamedCollection = function renderDisplayForItemInNamedCollection(containerEl, name, item) {
-    containerEl.innerHTML = this.getItemDescription(name, item);
+    var buffer = '';
+    var dateDisplay = moment__WEBPACK_IMPORTED_MODULE_7___default()(item.createdOn, 'YYYYMMDDHHmmss').format('DD/MM/YY HH:mm');
+    buffer += "<div class=\"row w-100\"><div><strong class=\"col-4\">" + dateDisplay + "</strong>: </div><div class=\"col-6 text-right\">";
+
+    if (item.type === 'deposit') {
+      buffer += '+';
+    } else {
+      buffer += '-';
+    }
+
+    var formatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'AUD' // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+
+    });
+    buffer += formatter.format(parseFloat(item.amount)) + '</div></div>';
+    containerEl.innerHTML = buffer;
   };
 
   _proto.hasPermissionToDeleteItemInNamedCollection = function hasPermissionToDeleteItemInNamedCollection(name, item) {
